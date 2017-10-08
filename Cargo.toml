@@ -1,6 +1,15 @@
 [package]
 name = "unchecked-index"
 version = "0.1.0"
-authors = ["bluss <bluss@users.noreply.github.com>"]
+
+license = "MIT/Apache-2.0"
+repository = "https://github.com/bluss/unchecked-index"
+documentation = "https://docs.rs/unchecked-index/"
+authors = ["bluss"]
+
+description = "Unchecked indexing wrapper using regular index syntax."
+
+keywords = ["unchecked", "index", "slice"]
+categories = ["rust-patterns"]
 
 [dependencies]
