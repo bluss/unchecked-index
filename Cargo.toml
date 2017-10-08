@@ -14,3 +14,6 @@ keywords = ["unchecked", "index", "slice"]
 categories = ["rust-patterns"]
 
 [dependencies]
+
+[package.metadata.release]
+no-dev-version = true
