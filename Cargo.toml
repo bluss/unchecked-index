@@ -6,6 +6,7 @@ license = "MIT/Apache-2.0"
 repository = "https://github.com/bluss/unchecked-index"
 documentation = "https://docs.rs/unchecked-index/"
 authors = ["bluss"]
+readme = "README.md"
 
 description = "Unchecked indexing wrapper using regular index syntax."
 

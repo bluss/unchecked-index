@@ -1,5 +1,5 @@
 
-//! Unchecked index through the regular index syntax.
+//! Unchecked indexing through the regular index syntax.
 //!
 //! Using a wrapper type that requires an `unsafe` block to create.
 //!
