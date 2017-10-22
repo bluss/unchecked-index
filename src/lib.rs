@@ -39,7 +39,12 @@
 ///
 /// Note that the indexing is checked with debug assertions, but unchecked
 /// in release mode. Test your code responsibly.
+#[derive(Copy)]
 pub struct UncheckedIndex<S>(S);
+
+impl<S: Copy> Clone for UncheckedIndex<S> {
+    fn clone(&self) -> Self { *self }
+}
 
 /// Create a new unchecked indexing wrapper.
 ///
