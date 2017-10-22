@@ -41,6 +41,10 @@ unsafe fn apply_permutation<T>(perm: &mut [usize], v: &mut [T]) {
 
 ## Recent Changes
 
+- 0.1.1
+
+  - Add `Copy` impl (for shared slices)
+
 - 0.1.0
 
   - Initial release
