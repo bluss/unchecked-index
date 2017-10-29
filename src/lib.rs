@@ -126,7 +126,7 @@ impl<T> CheckIndex<usize> for [T] {
 }
 
 pub trait GetUnchecked<I>: CheckIndex<I> {
-    type Output;
+    type Output: ?Sized;
     unsafe fn get_unchecked(&self, index: I) -> &Self::Output;
 }
 
