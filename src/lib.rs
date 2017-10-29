@@ -173,6 +173,47 @@ impl<'a, T: ?Sized, I> GetUncheckedMut<I> for &'a mut T
     }
 }
 
+macro_rules! impl_slice_range {
+    ($index_type:ty, $self_:ident, $index: ident, $assertion:expr) => {
+        impl<T> CheckIndex<$index_type> for [T] {
+            fn assert_indexable_with($self_: &Self, $index: &$index_type) {
+                $assertion
+            }
+        }
+
+        impl<T> GetUnchecked<$index_type> for [T] {
+            type Output = [T];
+            unsafe fn get_unchecked(&self, index: $index_type) -> &Self::Output {
+                (*self).get_unchecked(index)
+            }
+        }
+
+        impl<T> GetUncheckedMut<$index_type> for [T] {
+            unsafe fn get_unchecked_mut(&mut self, index: $index_type) -> &mut Self::Output {
+                (*self).get_unchecked_mut(index)
+            }
+        }
+    }
+}
+
+use std::ops::{Range, RangeTo, RangeFrom, RangeFull};
+
+impl_slice_range!(Range<usize>, self, index, {
+  assert!(index.start <= index.end, "start={} must be less than end={}", index.start, index.end);
+  assert!(index.end <= self.len(), "end is greater than len={}", self.len());
+});
+
+impl_slice_range!(RangeTo<usize>, self, index, {
+  assert!(index.end <= self.len(), "end is greater than len={}", self.len());
+});
+
+impl_slice_range!(RangeFrom<usize>, self, index, {
+  assert!(index.start <= self.len(), "end is greater than len={}", self.len());
+});
+
+impl_slice_range!(RangeFull, self, _index, { });
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -219,6 +260,29 @@ mod tests {
         unsafe {
             let mut data = unchecked_index(&mut data[..7]);
             data[7] = 1;
+        }
+        assert_eq!(data, [0, 0, 0, 0, 0, 0, 0, 1]);
+    }
+
+    #[cfg(debug_assertions)]
+    #[test]
+    #[should_panic]
+    fn debug_oob_check_read_slice() {
+        let mut data = [0; 8];
+        unsafe {
+            let data = unchecked_index(&mut data[..7]);
+            println!("{:?}", &data[5..10]);
+        }
+    }
+
+    #[cfg(not(debug_assertions))]
+    #[test]
+    fn non_debug_oob_slice() {
+        // outside bounds of the slice but not the data -- should be ok
+        let mut data = [0; 8];
+        unsafe {
+            let mut data = unchecked_index(&mut data[..7]);
+            data[7..8][0] = 1;
         }
         assert_eq!(data, [0, 0, 0, 0, 0, 0, 0, 1]);
     }
