@@ -3,6 +3,11 @@
 //!
 //! Using a wrapper type that requires an `unsafe` block to create.
 //!
+//! *Note:* All unchecked indexing here is actually “checked” with *debug
+//! assertions* when they are enabled (they are off by default in release
+//! builds). This is a feature! Debug checking does **not** make your code safe,
+//! but it helps finding bugs in `unsafe` code. Test your code responsibly.
+//!
 //! # Example
 //!
 //! ```rust
@@ -29,6 +34,10 @@
 //!     }
 //! }
 //! ```
+//!
+//! # Rust Version
+//!
+//! This version of the crate requires Rust 1.15 or later.
 
 // Because pain and SliceExt
 //#![no_std]
@@ -50,6 +59,11 @@ impl<S: Copy> Clone for UncheckedIndex<S> {
 ///
 /// This function is `unsafe` to call because it allows all further indexing
 /// on the wrapper to omit bounds checks.
+///
+/// # Safety
+///
+/// The caller must ensure that **all** indexing of the resulting
+/// `UncheckedIndex` wrapper is in bounds of the underlying container.
 pub unsafe fn unchecked_index<T>(v: T) -> UncheckedIndex<T>
 {
     UncheckedIndex(v)
@@ -62,8 +76,8 @@ pub unsafe fn unchecked_index<T>(v: T) -> UncheckedIndex<T>
 ///
 /// # Safety
 ///
-/// The caller must ensure that `index` is always in bounds of the
-/// underlying container.
+/// The caller must ensure that `index` is in bounds of the underlying
+/// container.
 pub unsafe fn get_unchecked<T: ?Sized, I>(v: &T, index: I) -> &T::Output
     where T: GetUnchecked<I>
 {
@@ -79,8 +93,8 @@ pub unsafe fn get_unchecked<T: ?Sized, I>(v: &T, index: I) -> &T::Output
 ///
 /// # Safety
 ///
-/// The caller must ensure that `index` is always in bounds of the
-/// underlying container.
+/// The caller must ensure that `index` is in bounds of the underlying
+/// container.
 pub unsafe fn get_unchecked_mut<T: ?Sized, I>(v: &mut T, index: I) -> &mut T::Output
     where T: GetUncheckedMut<I>
 {
