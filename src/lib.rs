@@ -55,6 +55,40 @@ pub unsafe fn unchecked_index<T>(v: T) -> UncheckedIndex<T>
     UncheckedIndex(v)
 }
 
+/// Access the element(s) at `index`, without bounds checks!
+///
+/// *Note:* Will use *debug assertions* to check that the index is actually
+/// valid. In release mode, debug assertions are *off* by default.
+///
+/// # Safety
+///
+/// The caller must ensure that `index` is always in bounds of the
+/// underlying container.
+pub unsafe fn get_unchecked<T: ?Sized, I>(v: &T, index: I) -> &T::Output
+    where T: GetUnchecked<I>
+{
+    #[cfg(debug_assertions)]
+    v.assert_indexable_with(&index);
+    v.get_unchecked(index)
+}
+
+/// Access the element(s) at `index`, without bounds checks!
+///
+/// *Note:* Will use *debug assertions* to check that the index is actually
+/// valid. In release mode, debug assertions are *off* by default.
+///
+/// # Safety
+///
+/// The caller must ensure that `index` is always in bounds of the
+/// underlying container.
+pub unsafe fn get_unchecked_mut<T: ?Sized, I>(v: &mut T, index: I) -> &mut T::Output
+    where T: GetUncheckedMut<I>
+{
+    #[cfg(debug_assertions)]
+    v.assert_indexable_with(&index);
+    v.get_unchecked_mut(index)
+}
+
 use std::ops::{Deref, DerefMut, Index, IndexMut};
 
 impl<T> Deref for UncheckedIndex<T> {
@@ -74,12 +108,20 @@ impl<T, I> Index<I> for UncheckedIndex<T>
     where T: GetUnchecked<I>
 {
     type Output = T::Output;
+
+    /// Access the element(s) at `index`, without bounds checks!
+    ///
+    /// *Note:* Will use *debug assertions* to check that the index is actually
+    /// valid. In release mode, debug assertions are *off* by default.
+    ///
+    /// # Safety
+    ///
+    /// The caller must ensure that `index` is always in bounds of the
+    /// underlying container.
     #[inline]
     fn index(&self, index: I) -> &Self::Output {
-        #[cfg(debug_assertions)]
-        self.assert_indexable_with(&index);
         unsafe {
-            self.0.get_unchecked(index)
+            get_unchecked(&self.0, index)
         }
     }
 }
@@ -87,12 +129,19 @@ impl<T, I> Index<I> for UncheckedIndex<T>
 impl<T, I> IndexMut<I> for UncheckedIndex<T>
     where T: GetUncheckedMut<I>
 {
+    /// Access the element(s) at `index`, without bounds checks!
+    ///
+    /// *Note:* Will use *debug assertions* to check that the index is actually
+    /// valid. In release mode, debug assertions are *off* by default.
+    ///
+    /// # Safety
+    ///
+    /// The caller must ensure that `index` is always in bounds of the
+    /// underlying container.
     #[inline]
     fn index_mut(&mut self, index: I) -> &mut Self::Output {
-        #[cfg(debug_assertions)]
-        self.assert_indexable_with(&index);
         unsafe {
-            self.0.get_unchecked_mut(index)
+            get_unchecked_mut(&mut self.0, index)
         }
     }
 }
