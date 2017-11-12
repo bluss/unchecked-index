@@ -183,7 +183,8 @@ impl<'a, T: ?Sized, I> CheckIndex<I> for &'a mut T where T: CheckIndex<I> {
 impl<T> CheckIndex<usize> for [T] {
     fn assert_indexable_with(&self, &index: &usize) {
         assert!(index < self.len(),
-                "index {} is out of bounds in slice of len {}",
+                "assertion index < len failed: index out of bounds: \
+                index = {}, len = {}",
                 index, self.len())
     }
 }
@@ -263,22 +264,22 @@ use std::ops::{Range, RangeTo, RangeFrom, RangeFull};
 
 impl_slice_range!(Range<usize>, self, index, {
   assert!(index.start <= index.end,
-          "assertion start <= end failed, with start={}, end={}",
-          index.start, index.end);
+          "assertion start <= end failed: start = {}, end = {}, len = {}",
+          index.start, index.end, self.len());
   assert!(index.end <= self.len(),
-          "assertion end <= len failed, with end={}, len={}",
+          "assertion end <= len failed: end = {}, len = {}",
           index.end, self.len());
 });
 
 impl_slice_range!(RangeTo<usize>, self, index, {
   assert!(index.end <= self.len(),
-          "assertion end <= len failed, with end={}, len={}",
+          "assertion end <= len failed: end = {}, len = {}",
           index.end, self.len());
 });
 
 impl_slice_range!(RangeFrom<usize>, self, index, {
   assert!(index.start <= self.len(),
-          "assertion start <= len failed, with start={}, len={}",
+          "assertion start <= len failed: start = {}, len = {}",
           index.start, self.len());
 });
 
