@@ -262,16 +262,24 @@ macro_rules! impl_slice_range {
 use std::ops::{Range, RangeTo, RangeFrom, RangeFull};
 
 impl_slice_range!(Range<usize>, self, index, {
-  assert!(index.start <= index.end, "start={} must be less than end={}", index.start, index.end);
-  assert!(index.end <= self.len(), "end is greater than len={}", self.len());
+  assert!(index.start <= index.end,
+          "assertion start <= end failed, with start={}, end={}",
+          index.start, index.end);
+  assert!(index.end <= self.len(),
+          "assertion end <= len failed, with end={}, len={}",
+          index.end, self.len());
 });
 
 impl_slice_range!(RangeTo<usize>, self, index, {
-  assert!(index.end <= self.len(), "end is greater than len={}", self.len());
+  assert!(index.end <= self.len(),
+          "assertion end <= len failed, with end={}, len={}",
+          index.end, self.len());
 });
 
 impl_slice_range!(RangeFrom<usize>, self, index, {
-  assert!(index.start <= self.len(), "end is greater than len={}", self.len());
+  assert!(index.start <= self.len(),
+          "assertion start <= len failed, with start={}, len={}",
+          index.start, self.len());
 });
 
 impl_slice_range!(RangeFull, self, _index, { });
