@@ -49,6 +49,11 @@ unsafe fn apply_permutation<T>(perm: &mut [usize], v: &mut [T]) {
 
 ## Recent Changes
 
+- 0.2.1
+
+  - Improve the (debug) assertion messages; fix a typo and always include
+    the relevant quantities (start, end, length)
+
 - 0.2.0
 
   - Add support for unchecked indexing with ranges (“slicing”)
