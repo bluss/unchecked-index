@@ -339,11 +339,44 @@ mod tests {
     #[cfg(debug_assertions)]
     #[test]
     #[should_panic]
-    fn debug_oob_check_read_slice() {
+    fn debug_oob_check_read_slice_1() {
         let mut data = [0; 8];
         unsafe {
             let data = unchecked_index(&mut data[..7]);
             println!("{:?}", &data[5..10]);
+        }
+    }
+
+    #[cfg(debug_assertions)]
+    #[test]
+    #[should_panic]
+    fn debug_oob_check_read_slice_2() {
+        let mut data = [0; 8];
+        unsafe {
+            let data = unchecked_index(&mut data[..7]);
+            println!("{:?}", &data[7..6]);
+        }
+    }
+
+    #[cfg(debug_assertions)]
+    #[test]
+    #[should_panic]
+    fn debug_oob_check_read_slice_3() {
+        let mut data = [0; 8];
+        unsafe {
+            let data = unchecked_index(&mut data[..7]);
+            println!("{:?}", &data[8..]);
+        }
+    }
+
+    #[cfg(debug_assertions)]
+    #[test]
+    #[should_panic]
+    fn debug_oob_check_read_slice_4() {
+        let mut data = [0; 8];
+        unsafe {
+            let data = unchecked_index(&mut data[..7]);
+            println!("{:?}", &data[..9]);
         }
     }
 
