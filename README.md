@@ -49,6 +49,10 @@ unsafe fn apply_permutation<T>(perm: &mut [usize], v: &mut [T]) {
 
 ## Recent Changes
 
+- 0.2.2
+
+  - The crate is now always `no_std`.
+
 - 0.2.1
 
   - Improve the (debug) assertion messages; fix a typo and always include
