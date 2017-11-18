@@ -35,14 +35,18 @@
 //! }
 //! ```
 //!
+//! # Crate Features
+//!
+//! This crate is always `#![no_std]`.
+//!
 //! # Rust Version
 //!
 //! This version of the crate requires Rust 1.15 or later.
 
-// Because pain and SliceExt
-//#![no_std]
+#![cfg_attr(not(test), no_std)]
 
-//extern crate core as std;
+#[cfg(not(test))]
+extern crate core as std;
 
 /// Wrapper type for unchecked indexing through the regular index syntax
 ///
@@ -180,15 +184,6 @@ impl<'a, T: ?Sized, I> CheckIndex<I> for &'a mut T where T: CheckIndex<I> {
     }
 }
 
-impl<T> CheckIndex<usize> for [T] {
-    fn assert_indexable_with(&self, &index: &usize) {
-        assert!(index < self.len(),
-                "assertion index < len failed: index out of bounds: \
-                index = {}, len = {}",
-                index, self.len())
-    }
-}
-
 pub trait GetUnchecked<I>: CheckIndex<I> {
     type Output: ?Sized;
     unsafe fn get_unchecked(&self, index: I) -> &Self::Output;
@@ -196,19 +191,6 @@ pub trait GetUnchecked<I>: CheckIndex<I> {
 
 pub trait GetUncheckedMut<I>: GetUnchecked<I> {
     unsafe fn get_unchecked_mut(&mut self, index: I) -> &mut Self::Output;
-}
-
-impl<T> GetUnchecked<usize> for [T] {
-    type Output = T;
-    unsafe fn get_unchecked(&self, index: usize) -> &Self::Output {
-        (*self).get_unchecked(index)
-    }
-}
-
-impl<T> GetUncheckedMut<usize> for [T] {
-    unsafe fn get_unchecked_mut(&mut self, index: usize) -> &mut Self::Output {
-        (*self).get_unchecked_mut(index)
-    }
 }
 
 impl<'a, T: ?Sized, I> GetUnchecked<I> for &'a T
@@ -237,53 +219,7 @@ impl<'a, T: ?Sized, I> GetUncheckedMut<I> for &'a mut T
     }
 }
 
-macro_rules! impl_slice_range {
-    ($index_type:ty, $self_:ident, $index: ident, $assertion:expr) => {
-        impl<T> CheckIndex<$index_type> for [T] {
-            fn assert_indexable_with($self_: &Self, $index: &$index_type) {
-                $assertion
-            }
-        }
-
-        impl<T> GetUnchecked<$index_type> for [T] {
-            type Output = [T];
-            unsafe fn get_unchecked(&self, index: $index_type) -> &Self::Output {
-                (*self).get_unchecked(index)
-            }
-        }
-
-        impl<T> GetUncheckedMut<$index_type> for [T] {
-            unsafe fn get_unchecked_mut(&mut self, index: $index_type) -> &mut Self::Output {
-                (*self).get_unchecked_mut(index)
-            }
-        }
-    }
-}
-
-use std::ops::{Range, RangeTo, RangeFrom, RangeFull};
-
-impl_slice_range!(Range<usize>, self, index, {
-  assert!(index.start <= index.end,
-          "assertion start <= end failed: start = {}, end = {}, len = {}",
-          index.start, index.end, self.len());
-  assert!(index.end <= self.len(),
-          "assertion end <= len failed: end = {}, len = {}",
-          index.end, self.len());
-});
-
-impl_slice_range!(RangeTo<usize>, self, index, {
-  assert!(index.end <= self.len(),
-          "assertion end <= len failed: end = {}, len = {}",
-          index.end, self.len());
-});
-
-impl_slice_range!(RangeFrom<usize>, self, index, {
-  assert!(index.start <= self.len(),
-          "assertion start <= len failed: start = {}, len = {}",
-          index.start, self.len());
-});
-
-impl_slice_range!(RangeFull, self, _index, { });
+mod slice_impls;
 
 
 #[cfg(test)]
